@@ -18,7 +18,7 @@ def P_Sk_given_Skm(sk, skm, params):
     return params['p_skm_sk'][skm,sk]
 
 # Parameters
-rainfall_rate = 0.2 # mm / minute
+rainfall_rate = 4 # mm / minute
 rainfall_rate_std = 0.06 # mm / minute
 measurement_std = 2.0 # mm
 
@@ -66,4 +66,19 @@ for x in range(params['p_skm_sk'].shape[0]):
                     horizontalalignment='center',
                     verticalalignment='center')
 plt.title("Rain transition probability")
+
+# FORWARD PASS
+# initial probs
+mu_x0 = 1 # mm
+sigma_x0 = 2# mm
+p_s0_1 = 0.3 # prob raining
+
+x1 = np.linspace(-10,10,1000)
+px1 = np.zeros(x1.shape)
+p_s1_1 = params['p_skm_sk'][0,1]*(1-p_s0_1) + params['p_skm_sk'][1,1]*p_s0_1
+px1 = px1 + gaussian(x1, mu_x0 + params['mu_sk'][0], np.sqrt(sigma_x0+params['sigma_sk'][0]))*(1-p_s1_1) \
+      + gaussian(x1, mu_x0 + params['mu_sk'][1], np.sqrt(sigma_x0+params['sigma_sk'][1]))*(p_s1_1)
+print(np.sum(px1*20/1000))
+plt.figure(4)
+plt.plot(x1,px1)
 plt.show()
